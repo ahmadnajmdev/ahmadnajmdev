@@ -26,19 +26,6 @@ Passionate about creating web and mobile applications that provide exceptional u
 ### 🌐 Top Languages
 ![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=ahmadnajmdev&layout=compact)
 
-### 💬 Recent Activity
-<!--START_SECTION:activity-->
-<!--END_SECTION:activity-->
 
-### 📝 Blog
-<!-- You can embed your blog posts here using GitHub Actions or any other method. -->
-
-### 🎧 Now Playing
-<!-- You can show the currently playing song from your favorite music streaming service. -->
-
-### 🔗 Other Links
-- [Resume](https://www.yourwebsite.com/resume.pdf)
-- [Dribbble](https://dribbble.com/yourusername)
-- [Behance](https://www.behance.net/yourusername)
 
 Feel free to explore my repositories and reach out if you have any questions or collaboration ideas. Let's create something amazing together!
