@@ -16,7 +16,7 @@ Passionate about creating web and mobile applications that provide exceptional u
 
 
 ### 📫 Get in Touch
-- LinkedIn: [Ahmad Najm]([https://www.linkedin.com/in/yourlinkedinprofile](https://www.linkedin.com/in/ahmad-najm-92200325a/))
+- LinkedIn: [Ahmad Najm](https://www.linkedin.com/in/ahmad-najm-92200325a/))
 - Email: [Send Email](mailto:ahmadnajim66@gmail.com)
 <!-- Portfolio: [www.yourwebsite.com](https://www.yourwebsite.com)--->
 
