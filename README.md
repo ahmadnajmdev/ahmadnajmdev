@@ -12,6 +12,7 @@
 
 <img align="right" alt="Coding" width="400" src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif">
 
+![Snake animation](https://raw.githubusercontent.com/ahmadnajmdev/ahmadnajmdev/output/github-contribution-grid-snake-dark.svg)
 ## 🧙‍♂️ About Me
 
 I'm a software alchemist turning complex problems into elegant solutions. With Laravel as my wand and Flutter as my spellbook, I craft digital experiences that amaze and delight.
