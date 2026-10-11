@@ -62,6 +62,4 @@
 
 <img src="assets/footer.svg" width="100%" alt="End of transmission — thanks for stopping by">
 
-<img src="https://komarev.com/ghpvc/?username=ahmadnajmdev&label=PROFILE%20VIEWS&color=00F0FF&style=flat-square" alt="Profile views">
-
 </div>
