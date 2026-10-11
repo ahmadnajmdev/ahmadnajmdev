@@ -423,6 +423,191 @@ function card(p) {
   return panel({ w: W, h: H, title: `${p.name} — ${p.tagline}`, style, defs, body, accent: p.accent });
 }
 
+// --- client work at GO Software ---------------------------------------------------
+
+const CLIENT_LOGOS = join(OUT, 'logos', 'clients');
+const MIME = { png: 'image/png', jpg: 'image/jpeg', svg: 'image/svg+xml' };
+
+function dataUri(file) {
+  const b64 = readFileSync(join(CLIENT_LOGOS, file)).toString('base64');
+  return `data:${MIME[file.split('.').pop()]};base64,${b64}`;
+}
+
+// Logos keep their own colours on a light plate, so dark marks stay visible.
+function plate(x, y, w, h, file, accent, pad) {
+  return `<g transform="translate(${x} ${y})">
+    <rect width="${w}" height="${h}" rx="14" fill="${accent}" opacity=".3" filter="url(#plateGlow)"/>
+    <rect width="${w}" height="${h}" rx="14" fill="#F4F7FB"/>
+    <image href="${dataUri(file)}" x="${pad}" y="${pad}" width="${w - pad * 2}" height="${h - pad * 2}" preserveAspectRatio="xMidYMid meet"/>
+    <rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="13" fill="none" stroke="${accent}" stroke-opacity=".7" stroke-width="2"/>
+  </g>`;
+}
+
+const plateGlow = `<filter id="plateGlow" x="-30%" y="-40%" width="160%" height="180%"><feGaussianBlur stdDeviation="9"/></filter>`;
+
+const TYPES = {
+  app: ['MOBILE APP', C.cyan],
+  web: ['WEBSITE', C.lime],
+  system: ['MANAGEMENT SYSTEM', C.violet],
+};
+
+// Facts come from gosoftware.krd/projects and each repo's composer.json.
+const CLIENT_WORK = [
+  {
+    id: 'asaari',
+    name: 'Asaari',
+    type: 'app',
+    logo: 'asaari.png',
+    live: true,
+    link: 'App Store',
+    lines: ['Gold prices & calculator, alerts, news and a community,', 'in English, Arabic and Kurdish with full RTL.'],
+    stack: ['Flutter', 'GetX', 'Laravel 12', 'Filament 4'],
+  },
+  {
+    id: 'climax',
+    name: 'Climax',
+    type: 'web',
+    logo: 'climax.png',
+    live: true,
+    link: 'climax.krd',
+    lines: ['Brand website and a 40+ product catalogue with specs', 'for a home appliances company in Erbil.'],
+    stack: ['Laravel 12', 'Filament 4', 'Livewire 3'],
+  },
+  {
+    id: 'power-orbits',
+    name: 'Power Orbits',
+    type: 'web',
+    logo: 'power-orbits.png',
+    live: true,
+    link: 'powerorbits.com',
+    lines: ['Website for a solar energy and storage company in', 'Erbil: services, products, projects and quotes.'],
+    stack: ['Laravel 12', 'Filament 3', 'Livewire 3'],
+  },
+  {
+    id: 'fire-agency',
+    name: 'Fire Agency CRM',
+    type: 'system',
+    logo: 'fire-agency.png',
+    live: false,
+    link: 'case study',
+    lines: ['The CRM behind Fire Production, a cinematic', 'production and talent agency.'],
+    stack: ['Laravel 12', 'Filament 3'],
+  },
+  {
+    id: 'fantasy-town',
+    name: 'Fantasy Town',
+    type: 'system',
+    logo: 'fantasy-town.png',
+    live: false,
+    link: 'case study',
+    lines: ['Property management system with a secure admin', 'panel for Fantasy Town in Shaqlawa.'],
+    stack: ['Laravel 11', 'Filament 3'],
+  },
+  {
+    id: 'folivya',
+    name: 'Folivya Academy',
+    type: 'system',
+    logo: 'folivya.png',
+    live: false,
+    link: 'case study',
+    lines: ["Management system the academy's team works in,", 'behind a secure login.'],
+    stack: ['Laravel 12', 'Filament 4'],
+  },
+];
+
+function clientCard(p) {
+  const W = 590;
+  const H = 244;
+  const [type, accent] = TYPES[p.type];
+  const tx = 182;
+  const pill = chip(tx, 80, type, accent, 12, true);
+  const sx = tx + pill.w + 14;
+  const [label, color] = p.live ? ['LIVE', C.lime] : ['INTERNAL', C.muted];
+  let cx = 28;
+  const chips = p.stack
+    .map((s) => {
+      const c = chip(cx, 202, s, accent, 12);
+      cx += c.w + 8;
+      return c.svg;
+    })
+    .join('');
+  const lines = p.lines
+    .map((l, i) => `<text x="28" y="${160 + i * 22}" font-family="${MONO}" font-size="15" fill="${C.text}">${esc(l)}</text>`)
+    .join('');
+
+  const style = `${fonts('orbitron-900', 'jetbrains-mono-400', 'jetbrains-mono-700')}
+    .blink{animation:blink 1.4s steps(1) infinite}
+    @keyframes blink{50%{opacity:.25}}`;
+  const defs = `${neonFilter('neon', accent, 0.7)}${plateGlow}`;
+  const body = `
+  <rect width="${W}" height="4" fill="${accent}" filter="url(#neon)"/>
+  ${plate(28, 28, 132, 96, p.logo, accent, 12)}
+  <text x="${tx}" y="64" font-family="${DISPLAY}" font-weight="900" font-size="25" letter-spacing="1" fill="#F4FEFF" filter="url(#neon)">${esc(p.name)}</text>
+  ${pill.svg}
+  <circle cx="${sx + 4}" cy="93" r="4" fill="${color}"${p.live ? ' class="blink"' : ''}/>
+  <text x="${sx + 14}" y="97.5" font-family="${MONO}" font-weight="700" font-size="12" letter-spacing="1" fill="${color}">${label}</text>
+  ${lines}
+  ${chips}
+  <g font-family="${MONO}" font-weight="700" font-size="14" fill="${accent}">
+    <text x="${W - 54}" y="220" text-anchor="end">${esc(p.link)}</text>
+    <path d="M${W - 46} 215H${W - 30}M${W - 36} 209L${W - 30} 215L${W - 36} 221" fill="none" stroke="${accent}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>`;
+  return panel({ w: W, h: H, title: `${p.name} — ${type.toLowerCase()} by GO Software`, style, defs, body, accent });
+}
+
+const CLIENTS = [
+  ['Folivya Academy', 'folivya.png'],
+  ['Fire Production', 'fire-agency.png'],
+  ['Power Orbits', 'power-orbits.png'],
+  ['Climax', 'climax.png'],
+  ['Zuu Delivery', 'zuu.svg'],
+  ['Asaari', 'asaari.png'],
+  ['Suli Shopping', 'suli-shopping.jpg'],
+  ['Fantasy Town', 'fantasy-town.png'],
+  ['Didam Store', 'didam.jpg'],
+];
+
+function clients() {
+  const W = 1200;
+  const H = 412;
+  const tw = 196;
+  const th = 96;
+  const gap = 26;
+  const accents = [C.cyan, C.magenta, C.violet, C.lime, C.orange, C.amber];
+  const rows = [CLIENTS.slice(0, 5), CLIENTS.slice(5)];
+  let i = 0;
+  const tiles = rows
+    .map((row, r) => {
+      const x0 = (W - (row.length * tw + (row.length - 1) * gap)) / 2;
+      const y = 106 + r * 150;
+      return row
+        .map(([name, file], k) => {
+          const x = x0 + k * (tw + gap);
+          const accent = accents[i++ % accents.length];
+          return `${plate(x, y, tw, th, file, accent, 14)}
+          <text x="${x + tw / 2}" y="${y + th + 26}" text-anchor="middle" font-family="${MONO}" font-size="13" fill="${C.muted}">${esc(name)}</text>`;
+        })
+        .join('\n');
+    })
+    .join('\n');
+
+  const style = fonts('orbitron-600', 'jetbrains-mono-400');
+  const defs = `${plateGlow}
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="${C.cyan}" stop-opacity="0"/>
+      <stop offset=".5" stop-color="${C.cyan}" stop-opacity=".08"/>
+      <stop offset="1" stop-color="${C.cyan}" stop-opacity="0"/>
+    </linearGradient>`;
+  const body = `
+  <rect x="-200" width="200" height="${H}" fill="url(#beam)">
+    <animate attributeName="x" from="-200" to="${W}" dur="6s" repeatCount="indefinite"/>
+  </rect>
+  <text x="${W / 2}" y="50" text-anchor="middle" font-family="${DISPLAY}" font-weight="600" font-size="16" letter-spacing="4" fill="${C.cyan}">TRUSTED BY BUSINESSES ACROSS KURDISTAN &amp; IRAQ</text>
+  <text x="${W / 2}" y="76" text-anchor="middle" font-family="${MONO}" font-size="14" fill="${C.muted}">${CLIENTS.length} clients · websites, mobile apps and management systems</text>
+  ${tiles}`;
+  return panel({ w: W, h: H, title: 'Clients of GO Software', style, defs, body });
+}
+
 // --- tech stack -----------------------------------------------------------------
 
 async function icon(name, prefix) {
@@ -516,6 +701,25 @@ function button(label, iconName, accent, w = 230) {
 `;
 }
 
+// Store icons are Simple Icons paths (CC0) on a 24px grid.
+const iconPath = (name) => readFileSync(join(OUT, 'logos', 'icons', `${name}.svg`), 'utf8').match(/ d="([^"]+)"/)[1];
+
+function storeBadge(kicker, label, accent, glyph, w = 236) {
+  const h = 58;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img">
+  <title>${esc(`${kicker} ${label}`)}</title>
+  <defs><style>${fonts('orbitron-600', 'jetbrains-mono-700')}</style>${neonFilter('neon', accent, 0.45)}
+    <linearGradient id="f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${accent}" stop-opacity=".18"/><stop offset="1" stop-color="${C.bg}" stop-opacity="0"/></linearGradient>
+  </defs>
+  <path d="${chamfer(w - 2, h - 2)}" transform="translate(1 1)" fill="${C.bg}"/>
+  <path d="${chamfer(w - 2, h - 2)}" transform="translate(1 1)" fill="url(#f)" stroke="${accent}" stroke-width="1.6"/>
+  <g transform="translate(20 ${(h - 26) / 2}) scale(${26 / 24})" filter="url(#neon)">${glyph}</g>
+  <text x="62" y="24" font-family="${MONO}" font-weight="700" font-size="10" letter-spacing="1.5" fill="${C.muted}">${esc(kicker)}</text>
+  <text x="62" y="44" font-family="${DISPLAY}" font-weight="600" font-size="18" fill="${accent}">${esc(label)}</text>
+</svg>
+`;
+}
+
 function cta() {
   const w = 560;
   const h = 96;
@@ -564,12 +768,18 @@ save('about.svg', about());
 [
   ['01', 'WHOAMI', C.cyan],
   ['02', 'PRODUCTS I BUILT', C.magenta],
-  ['03', 'TECH STACK', C.violet],
-  ['04', 'ACTIVITY', C.lime],
-  ['05', "LET'S BUILD", C.orange],
+  ['03', 'CLIENT WORK @ GO SOFTWARE', C.amber],
+  ['04', 'TECH STACK', C.violet],
+  ['05', 'ACTIVITY', C.lime],
+  ['06', "LET'S BUILD", C.orange],
 ].forEach(([n, label, accent]) => save(`titles/${n}.svg`, title(n, label, accent)));
 for (const p of PROJECTS) save(`projects/${p.id}.svg`, card(p));
+for (const p of CLIENT_WORK) save(`work/${p.id}.svg`, clientCard(p));
+save('clients.svg', clients());
 save('stack.svg', await stack());
+save('buttons/app-store.svg', storeBadge('DOWNLOAD ON THE', 'App Store', C.cyan, `<path fill="${C.cyan}" d="${iconPath('apple')}"/>`));
+save('buttons/google-play.svg', storeBadge('GET IT ON', 'Google Play', C.lime, `<path fill="${C.lime}" d="${iconPath('googleplay')}"/>`));
+save('buttons/useveyra.svg', storeBadge('VISIT', 'useveyra.co', C.violet, ICONS.web(C.violet)));
 save('buttons/website.svg', button('WEBSITE', 'web', C.cyan));
 save('buttons/linkedin.svg', button('LINKEDIN', 'linkedin', '#3FA9FF'));
 save('buttons/email.svg', button('EMAIL', 'mail', C.magenta));

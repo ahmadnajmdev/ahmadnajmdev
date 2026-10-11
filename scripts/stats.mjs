@@ -14,7 +14,6 @@ const CALENDAR = `query($login: String!, $from: DateTime, $to: DateTime) {
   user(login: $login) {
     createdAt
     contributionsCollection(from: $from, to: $to) {
-      totalRepositoriesWithContributedCommits
       contributionCalendar {
         totalContributions
         weeks { contributionDays { date contributionCount } }
@@ -43,7 +42,6 @@ async function calendar(from, to) {
 const recent = await calendar();
 const weeks = recent.contributionsCollection.contributionCalendar.weeks;
 const lastYear = recent.contributionsCollection.contributionCalendar.totalContributions;
-const repos = recent.contributionsCollection.totalRepositoriesWithContributedCommits;
 const firstYear = new Date(recent.createdAt).getUTCFullYear();
 const thisYear = new Date().getUTCFullYear();
 
@@ -63,6 +61,15 @@ const upToToday = days.filter(([d]) => d <= today);
 const sum = (xs) => xs.reduce((s, [, n]) => s + n, 0);
 const total = sum(upToToday);
 const ytd = sum(upToToday.filter(([d]) => d.startsWith(`${thisYear}-`)));
+
+let longest = 0;
+let run = 0;
+for (const [, n] of upToToday) {
+  run = n > 0 ? run + 1 : 0;
+  longest = Math.max(longest, run);
+}
+
+const activeDays = weeks.flatMap((w) => w.contributionDays).filter((d) => d.contributionCount > 0).length;
 const series = weeks.map((w) => w.contributionDays.reduce((s, d) => s + d.contributionCount, 0));
 const peak = Math.max(1, ...series);
 
@@ -144,11 +151,11 @@ const body = `
   ${chrome(W, `git log --author=${login} | stats`)}
   ${tile(40, 72, 'CONTRIBUTIONS', 'last 12 months', fmt(lastYear), C.cyan)}
   ${tile(310, 72, 'ALL-TIME', `since ${firstYear}`, fmt(total), C.magenta)}
-  ${tile(40, 218, 'REPOSITORIES', 'committed to · 12 months', fmt(repos), C.lime)}
-  ${tile(310, 218, 'BEST WEEK', 'contributions in 7 days', fmt(peak), C.amber)}
+  ${tile(40, 218, 'ACTIVE DAYS', 'last 12 months', fmt(activeDays), C.lime)}
+  ${tile(310, 218, 'LONGEST STREAK', longest === 1 ? 'day' : 'days in a row', fmt(longest), C.amber)}
 
   <text x="${cx0}" y="88" font-family="${DISPLAY}" font-weight="600" font-size="13" letter-spacing="2" fill="${C.cyan}">WEEKLY CONTRIBUTIONS</text>
-  <text x="${cx1}" y="88" text-anchor="end" font-family="${MONO}" font-size="13" fill="${C.muted}">${fmt(ytd)} so far in ${thisYear}</text>
+  <text x="${cx1}" y="88" text-anchor="end" font-family="${MONO}" font-size="13" fill="${C.muted}">best week ${fmt(peak)} · ${fmt(ytd)} in ${thisYear}</text>
   ${grid}
   <path d="M${cx0} ${cy1}H${cx1}" stroke="${C.line}" stroke-width="1.5"/>
   <path class="area" d="${area}" fill="url(#fill)"/>
@@ -160,4 +167,4 @@ const body = `
 
 mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, 'activity.svg'), panel({ w: W, h: H, title: `${login} activity`, style, defs, body }));
-console.log({ lastYear, total, ytd, repos, peak });
+console.log({ lastYear, total, ytd, activeDays, longest, peak });
