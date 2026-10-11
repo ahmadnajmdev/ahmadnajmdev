@@ -766,13 +766,13 @@ function footer() {
 save('header.svg', header());
 save('about.svg', about());
 [
-  ['01', 'WHOAMI', C.cyan],
-  ['02', 'PRODUCTS I BUILT', C.magenta],
-  ['03', 'CLIENT WORK @ GO SOFTWARE', C.amber],
-  ['04', 'TECH STACK', C.violet],
-  ['05', 'ACTIVITY', C.lime],
-  ['06', "LET'S BUILD", C.orange],
-].forEach(([n, label, accent]) => save(`titles/${n}.svg`, title(n, label, accent)));
+  ['01', 'WHOAMI', C.cyan, 'whoami'],
+  ['02', 'PRODUCTS I BUILT', C.magenta, 'products'],
+  ['03', 'CLIENT WORK @ GO SOFTWARE', C.amber, 'client-work'],
+  ['04', 'TECH STACK', C.violet, 'tech-stack'],
+  ['05', 'ACTIVITY', C.lime, 'activity'],
+  ['06', "LET'S BUILD", C.orange, 'lets-build'],
+].forEach(([n, label, accent, slug]) => save(`titles/${slug}.svg`, title(n, label, accent)));
 for (const p of PROJECTS) save(`projects/${p.id}.svg`, card(p));
 for (const p of CLIENT_WORK) save(`work/${p.id}.svg`, clientCard(p));
 save('clients.svg', clients());
